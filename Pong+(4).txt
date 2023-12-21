@@ -1,0 +1,652 @@
+
+//required import statements
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.Timer;
+
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+
+@SuppressWarnings("serial")
+//TODO: Change the name of the class from AnimationShell to the name of your class
+public class Pong extends JPanel {
+	private class Mouse implements MouseListener {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+	}
+
+	private class Keyboard implements KeyListener {
+		@Override
+		public void keyTyped(KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e) {
+			// TODO Auto-generated method stub
+
+			int key = e.getKeyCode();
+			if (key == KeyEvent.VK_W && b.getY() > 0) {
+				b.setY(b.getY() - 200);
+				x--;
+
+			} else if (key == KeyEvent.VK_S && b.getY() < 750) {
+				b.setY(b.getY() + 200);
+				x++;
+			} else if (b.getY() == 0 && key == KeyEvent.VK_W) {
+				b.setY(750);
+				x = 3;
+			}
+
+			else if (b.getY() == 750 && key == KeyEvent.VK_S) {
+				b.setY(0);
+				x = 0;
+			}
+			if (key == KeyEvent.VK_UP && b2.getY() > 0) {
+				b2.setY(b2.getY() - 200);
+				y--;
+			} else if (key == KeyEvent.VK_DOWN && b2.getY() < 750) {
+				b2.setY(b2.getY() + 200);
+				y++;
+			} else if (b2.getY() == 0 && key == KeyEvent.VK_UP) {
+				b2.setY(750);
+				y = 3;
+			}
+
+			else if (b2.getY() == 750 && key == KeyEvent.VK_DOWN) {
+				b2.setY(0);
+				y = 0;
+			}
+			if (key == KeyEvent.VK_LEFT) {
+				if (Mode > 1) {
+					Mode--;
+				} else if (Mode == 1) {
+					Mode = 5;
+				}
+			}
+			if (key == KeyEvent.VK_RIGHT) {
+				if (Mode < 5) {
+					Mode++;
+				} else if (Mode == 5) {
+					Mode = 1;
+
+				}
+				System.out.println(Mode);
+			}
+			if (key == KeyEvent.VK_ENTER) {
+				if (level == 0) {
+					level = Mode;
+				}
+			}
+			if(key == KeyEvent.VK_N) {
+				timer.start();
+				in++;
+			}
+			if(key == KeyEvent.VK_SPACE ) {
+				timer.start();
+				isTimer = true;
+				
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e) {
+			// TODO Auto-generated method stub
+
+		}
+	}
+
+	// TODO: set the initial width and height of your image
+	private static final int WIDTH = 1000;
+	private static final int HEIGHT = 1000;
+
+	// required global variables
+	private BufferedImage image;
+	private Graphics g;
+	private Timer timer;
+	// TODO: change this to whatever object(s) you are animating
+	private Paddle b;
+	private Paddle b2;
+	private ArrayList<PongBall> ball = new ArrayList<PongBall>();
+	private ArrayList<Integer> yLoc = new ArrayList<Integer>();
+	int x = 0;
+	int y = 0;
+	int hg = 5;
+	int Score = 0;
+	private ArrayList<Integer> yLoc2 = new ArrayList<Integer>();
+	private int Mode = 1;
+	private int level = 0;
+	private Paddle b3;
+	private int lives = 3;  
+	private int hScore = 0;
+	private int in = 1;
+	int pauseCheck = 0;
+	private boolean isTimer = true;
+	private int ballCount = 0;
+
+	// Constructor required by BufferedImage
+	public Pong() {
+		// set up Buffered Image and Graphics objects
+		//this is where I add 
+		image = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
+		g = image.getGraphics();
+		b = new Paddle(0, 0, 50, 270, Color.BLUE);
+		b2 = new Paddle(950, 0, 50, 270, Color.BLUE);
+		b.draw(g);
+		b2.draw(g);
+		ball.add(new PongBall(WIDTH / 2, HEIGHT / 2, 60, Color.RED));
+		ball.add(new PongBall(WIDTH / 2, HEIGHT / 2, 60, Color.RED));
+		ball.add(new PongBall(WIDTH / 2, HEIGHT / 2, 60, Color.RED));
+		ball.add(new PongBall(WIDTH / 2, HEIGHT / 2, 60, Color.RED));
+		ball.get(2).setXSpeed(-5);
+		ball.get(2).setYSpeed(4);
+		ball.get(3).setXSpeed(-5);
+		ball.get(3).setYSpeed(4);
+		ball.get(0).setXSpeed(-5);
+		ball.get(0).setYSpeed(4);
+		b3 = new Paddle(930, 0, 70, 1000, Color.BLUE);
+		ball.get(1).setXSpeed(5);
+		ball.get(1).setYSpeed(-4);
+		/*
+		 * TODO: Code to setup the objects you will animate goes here All objects
+		 * declared above should be initialized here ex. cloud = new Cloud(100, 100,
+		 * 250, 70, Color.WHITE); cloud.setXSpeed(2);
+		 */
+		/*
+		 * if(x == 0) { for(int i = 0; i > -251; i --) { for(int k = 0; k > 251; k++) {
+		 * yLoc.set(k,i); } } } if( x == 1) { for(int i = 0; i > -501; i --) { for(int k
+		 * = 0; k > 251; k++) { yLoc.set(k,i); } } } if( x == 2) { for(int i = 0; i >
+		 * -751; i --) { for(int k = 0; k > 251; k++) { yLoc.set(k,i); } } } if( x == 3)
+		 * { for(int i = 0; i > -1001; i --) { for(int k = 0; k > 251; k++) {
+		 * yLoc.set(k,i); } } } if(y == 0) { for(int i = 0; i > -251; i --) { for(int k
+		 * = 0; k > 251; k++) { yLoc2.set(k,i); } } } if( y == 1) { for(int i = 0; i >
+		 * -501; i --) { for(int k = 0; k > 251; k++) { yLoc2.set(k,i); } } } if( y ==
+		 * 2) { for(int i = 0; i > -751; i --) { for(int k = 0; k > 251; k++) {
+		 * yLoc2.set(k,i); } } } if( y == 3) { for(int i = 0; i > -1001; i --) { for(int
+		 * k = 0; k > 251; k++) { yLoc2.set(k,i); } } }
+		 * 
+		 * for(int i = 0; i < 250; i ++) {
+		 * 
+		 * if(ball.getY() == yLoc.get(i) || ball.getY() == yLoc2.get(i)) { hg ++; } }
+		 * if(hg > 0) { ball.setXSpeed(ball.getXSpeed()*-1); }
+		 */
+
+		// set up and start the Timer
+		timer = new Timer(1, new TimerListener());
+		timer.start();
+		addKeyListener(new Keyboard());
+		setFocusable(true);
+	}
+
+	// TimerListener class that is called repeatedly by the timer
+	private class TimerListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			/*
+			 * TODO: Move the objects that need to be animated Draw your ENTIRE scene Don't
+			 * forget to call repaint!
+			 */
+			// i got this screen from michael
+			if (level == 0) {
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				g.setColor(Color.WHITE);
+				g.drawRect(WIDTH / 2 - 120, HEIGHT / 2 - 50, 340, 100);
+				g.setFont(new Font("", Font.BOLD, 30));
+				g.drawString("2P: Normal Pong", 300, 35);
+				g.drawString("Diff 1: 1 Ball, No Speed Increase", 250, 75);
+				g.drawString("Diff 2: 1 Ball, Speed Increase", 250, 125);
+				g.drawString("Diff 3: 2 Ball", 250, 165);
+				g.drawString("Diff 4: Balls Double every 4 score", 250, 205);
+
+				g.drawString("Mode Select", WIDTH / 2 - 88, HEIGHT / 2 - 55);
+				if (Mode == 1) {
+					g.drawString("Mode: 2 Player", WIDTH / 2 - 60, HEIGHT / 2 + 8);
+				}
+				if (Mode == 2) {
+					g.drawString("Diff: Easy", WIDTH / 2 - 60, HEIGHT / 2 + 8);
+				}
+				if (Mode == 3) {
+					g.drawString("Diff: Medium", WIDTH / 2 - 60, HEIGHT / 2 + 8);
+				}
+				if (Mode == 4) {
+					g.drawString("Diff: Hard", WIDTH / 2 - 60, HEIGHT / 2 + 8);
+				}
+				if (Mode == 5) {
+					g.drawString("Diff: ???", WIDTH / 2 - 60, HEIGHT / 2 + 8);
+				}
+
+				g.drawString("<", WIDTH / 2 - 90, HEIGHT / 2 + 8);
+				g.drawString(">", WIDTH / 2 + 180, HEIGHT / 2 + 8);
+				g.drawString("Use arrow keys to choose and enter to select", 110, HEIGHT - 200);
+				repaint();
+			} else if (level == 1) {
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				b.draw(g);
+				b2.draw(g);
+				ball.get(0).draw(g);
+				ball.get(0).move(WIDTH, HEIGHT);
+
+				if (ball.get(0).intersectsWith(b)) {
+
+					Score++;
+					ball.get(0).setLocation(ball.get(0).getX() + 10, ball.get(0).getY() + 5);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+					if (ball.get(0).getXSpeed() > 0) {
+						ball.get(0).setXSpeed(ball.get(0).getXSpeed() + 1);
+					}
+					if (ball.get(0).getXSpeed() < 0) {
+						ball.get(0).setXSpeed(ball.get(0).getXSpeed() - 1);
+					}
+				}
+
+				if (ball.get(0).intersectsWith(b2)) {
+					ball.get(0).setLocation(ball.get(0).getX() - 20, ball.get(0).getY() + 5);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+					Score++;
+					hg++;
+					if (ball.get(0).getXSpeed() > 0 && hg % 5 == 0) {
+						ball.get(0).setXSpeed(ball.get(0).getXSpeed() + 1);
+					}
+					if (ball.get(0).getXSpeed() < 0 && hg % 5 == 0) {
+						ball.get(0).setXSpeed(ball.get(0).getXSpeed() - 1);
+					}
+				}
+
+				g.drawString("Xspeed:" + ball.get(0).getXSpeed(), 400, 30);
+				g.drawString("Score =" + Score, 400, 70);
+				if (ball.get(0).getX() <= 0) {
+					timer.stop();
+					g.setFont(new Font("", Font.BOLD, 80));
+					g.drawString("P2 Wins!", 300, 540);
+				}
+				if (ball.get(0).getX() >= 1000) {
+					timer.stop();
+					g.setFont(new Font("", Font.BOLD, 80));
+					g.drawString("P1 Wins!", 300, 540);
+				}
+			} else if (level == 2) {
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				b.draw(g);
+				b3.draw(g);
+				ball.get(0).draw(g);
+				ball.get(0).move(WIDTH, HEIGHT);
+				if (ball.get(0).intersectsWith(b)) {
+
+					Score++;
+					ball.get(0).setLocation(ball.get(0).getX() + 10, ball.get(0).getY() + 5);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+				}
+
+				if (ball.get(0).getX() + ball.get(0).getRadius() >= 920) {
+
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() - 1);
+
+				}
+				g.drawString("Xspeed:" + ball.get(0).getXSpeed(), 400, 30);
+				g.drawString("Score =" + Score, 400, 70);
+				if (ball.get(0).getX() <= 0) {
+					timer.stop();
+					g.setFont(new Font("", Font.BOLD, 80));
+					g.drawString("Score:" + Score, 300, 540);
+					if (Score <= 5) {
+						g.drawString("Rank: F", 300, 650);
+					}
+					if (Score > 5 && Score <= 10) {
+						g.drawString("Rank: D", 300, 650);
+					}
+					if (Score > 10 && Score <= 15) {
+						g.drawString("Rank: C", 300, 650);
+					}
+					if (Score > 15 && Score <= 20) {
+						g.drawString("Rank: B", 300, 650);
+					}
+					if (Score > 20 && Score <= 25) {
+						g.drawString("Rank: A", 300, 650);
+					}
+					if (Score > 25 && Score <= 30) {
+						g.drawString("Rank: S", 300, 650);
+					}
+					if (Score > 30) {
+						g.drawString("Rank: SS", 300, 650);
+					}
+				}
+
+			}
+
+			if (level == 3) {
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				b.draw(g);
+				b3.draw(g);
+				ball.get(0).draw(g);
+				ball.get(0).move(WIDTH, HEIGHT);
+				if (ball.get(0).intersectsWith(b)) {
+
+					Score++;
+					ball.get(0).setLocation(ball.get(0).getX() + 10, ball.get(0).getY() + 5);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+					if (ball.get(0).getXSpeed() > 0) {
+						ball.get(0).setXSpeed(ball.get(0).getXSpeed() + 1);
+					}
+					if (ball.get(0).getXSpeed() < 0) {
+						ball.get(0).setXSpeed(ball.get(0).getXSpeed() - 1);
+					}
+
+				}
+
+				if (ball.get(0).getX() + ball.get(0).getRadius() + ball.get(0).getXSpeed() / 2 >= 930) {
+
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+
+				}
+				g.drawString("Xspeed:" + ball.get(0).getXSpeed(), 400, 30);
+				g.drawString("Score =" + Score, 400, 70);
+				if (ball.get(0).getX() <= 0) {
+					timer.stop();
+					g.setFont(new Font("", Font.BOLD, 80));
+					g.drawString("Score:" + Score, 300, 540);
+					if (Score <= 5) {
+						g.drawString("Rank: F", 300, 650);
+					}
+					if (Score > 5 && Score <= 10) {
+						g.drawString("Rank: D", 300, 650);
+					}
+					if (Score > 10 && Score <= 15) {
+						g.drawString("Rank: C", 300, 650);
+					}
+					if (Score > 15 && Score <= 20) {
+						g.drawString("Rank: B", 300, 650);
+					}
+					if (Score > 20 && Score <= 25) {
+						g.drawString("Rank: A", 300, 650);
+					}
+					if (Score > 25 && Score <= 30) {
+						g.drawString("Rank: S", 300, 650);
+					}
+					if (Score > 30) {
+						g.drawString("Rank: SS", 300, 650);
+					}
+				}
+
+			}
+			if (level == 4) {
+				
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				b.draw(g);
+				b3.draw(g);
+
+				
+
+				ball.get(0).draw(g);
+				ball.get(1).draw(g);
+				ball.get(0).move(WIDTH, HEIGHT);
+				ball.get(1).move(WIDTH, HEIGHT);
+				
+				if (ball.get(0).intersectsWith(b)) {
+
+					Score++;
+					ball.get(0).setLocation(ball.get(0).getX() + 10, ball.get(0).getY() + 5);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+					
+
+				}
+				if (ball.get(1).intersectsWith(b)) {
+
+					Score++;
+					ball.get(1).setLocation(ball.get(1).getX() + 10, ball.get(1).getY() + 5);
+					ball.get(1).setXSpeed(ball.get(1).getXSpeed()*-1);
+					ball.get(1).setXSpeed(ball.get(1).getXSpeed() + 1);
+					
+					
+
+				}
+				if(ball.get(1).getX() >= 930) {
+					ball.get(1).setXSpeed(ball.get(1).getXSpeed() * -1);
+				}
+				if (ball.get(0).getX() + ball.get(0).getRadius() + ball.get(0).getXSpeed() / 2 >= 930) {
+
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() -1);
+					
+					
+				}
+
+				g.drawString("Xspeed:" + ball.get(0).getXSpeed(), 400, 30);
+				g.drawString("Xspeed2:" + ball.get(1).getXSpeed(), 400, 70);
+				g.drawString("Score =" + Score, 400, 110);
+				if (ball.get(0).getX() <= 0 || ball.get(1).getX() <= 0) {
+					lives = 0;
+					timer.stop();
+					isTimer = false;
+					g.setFont(new Font("", Font.BOLD, 80));
+					g.drawString("Score:" + Score, 300, 540);
+					if (Score <= 5) {
+						g.drawString("Rank: F", 300, 650);
+					}
+					if (Score > 5 && Score <= 10 && lives == 0) {
+						g.drawString("Rank: D", 300, 650);
+						hScore = 1 ;
+						g.setFont(new Font("", Font.BOLD, 60));
+						ball.get(0).setLocation(500, 500);
+						level = 5;
+						
+						
+					}
+					if (Score > 10 && Score <= 15) {
+						g.drawString("Rank: C", 300, 650);
+					}
+					if (Score > 15 && Score <= 20 && lives == 0) {
+						g.drawString("Rank: B", 300, 650);
+						hScore = 1 ;
+						g.setFont(new Font("", Font.BOLD, 60));
+						level = 5;
+						Score = 0;
+					}
+					if (Score > 20 && Score <= 25  && lives == 0) {
+						g.drawString("Rank: A", 300, 650);
+						hScore = 1 ;
+						g.setFont(new Font("", Font.BOLD, 60));
+						level = 5;
+						Score = 0;
+					}
+					if (Score > 25 && Score <= 30  && lives == 0) {
+						g.drawString("Rank: S", 300, 650);
+						hScore = 1 ;
+						g.setFont(new Font("", Font.BOLD, 60));
+						level = 5;
+						Score = 0;
+					}
+					if (Score > 30  && lives == 0) {
+						g.drawString("Rank: SS", 300, 650);
+						hScore = 1 ;
+						g.setFont(new Font("", Font.BOLD, 60));
+						level = 5;
+						Score = 0;
+					}
+				}
+				
+			
+			}
+			if(level == 5 && hScore == 0) {
+				g.setColor(Color.BLACK);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				g.setFont(new Font("", Font.BOLD, 40));
+				g.setColor(Color.RED);
+				g.drawString("Get a B or above on Hard to unlock!", 100, 400);
+				
+			}
+		
+			if(level == 5 && hScore == 1) {
+				if(pauseCheck == 0) {
+					timer.stop();
+					isTimer = false;
+					
+					pauseCheck++;
+				}
+				if(isTimer = false) {
+					g.drawString("Press Space to unpause", 100, 400);
+				}
+				
+				g.setColor(Color.WHITE);
+				g.fillRect(0, 0, WIDTH, HEIGHT);
+				g.setColor(Color.RED);
+				g.drawString("Score =" + Score, 400, 110);
+				b.draw(g);
+				b3.draw(g);
+				
+				ball.get(0).setXSpeed(5);
+				ball.get(0).draw(g);
+				ball.get(0).move(WIDTH,HEIGHT);
+				ball.get(1).draw(g);
+				ball.get(1).move(WIDTH,HEIGHT);
+				ball.get(2).draw(g);
+				ball.get(2).move(WIDTH,HEIGHT);
+				if (ball.get(0).intersectsWith(b)) {
+
+					Score++;
+					ball.get(0).setLocation(ball.get(0).getX() + 10, ball.get(0).getY() + 5);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+				}
+				if (ball.get(1).intersectsWith(b)) {
+
+					Score++;
+					ball.get(1).setLocation(ball.get(1).getX() + 10, ball.get(1).getY() + 5);
+					ball.get(1).setXSpeed(ball.get(1).getXSpeed() * -1);
+					
+				}
+				if (ball.get(2).intersectsWith(b)) {
+
+					Score++;
+					ball.get(2).setLocation(ball.get(2).getX() + 10, ball.get(2).getY() + 5);
+					ball.get(2).setXSpeed(ball.get(2).getXSpeed() * -1);
+				}
+				if (ball.get(0).getX() + ball.get(0).getRadius() + ball.get(0).getXSpeed() / 2 >= 930) {
+
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() * -1);
+					ball.get(0).setXSpeed(ball.get(0).getXSpeed() -1);
+					
+					
+				}
+				if (ball.get(1).getX() + ball.get(1).getRadius() + ball.get(1).getXSpeed() / 2 >= 930) {
+
+					ball.get(1).setXSpeed(ball.get(1).getXSpeed() * -1);
+					ball.get(1).setXSpeed(ball.get(1).getXSpeed() -1);
+					
+					
+				}
+				if (ball.get(2).getX() + ball.get(2).getRadius() + ball.get(2).getXSpeed() / 2 >= 930) {
+
+					ball.get(2).setXSpeed(ball.get(2).getXSpeed() * -1);
+					ball.get(2).setXSpeed(ball.get(2).getXSpeed() -1);
+					
+					
+				}
+
+
+				
+				
+				
+				System.out.println("HELLO");
+				
+				
+			}
+			System.out.println(level + " " + hScore); 
+			if (Score > 10 && Score <= 15) {
+				g.drawString("Rank: C", 300, 650);
+			}
+			if (Score > 15 && Score <= 20 && lives == 0) {
+				g.drawString("Rank: B", 300, 650);
+				hScore = 1 ;
+				g.setFont(new Font("", Font.BOLD, 60));
+				level = 5;
+				Score = 0;
+			}
+			if (Score > 20 && Score <= 25  && lives == 0) {
+				g.drawString("Rank: A", 300, 650);
+				hScore = 1 ;
+				g.setFont(new Font("", Font.BOLD, 60));
+				level = 5;
+				Score = 0;
+			}
+			if (Score > 25 && Score <= 30  && lives == 0) {
+				g.drawString("Rank: S", 300, 650);
+				hScore = 1 ;
+				g.setFont(new Font("", Font.BOLD, 60));
+				level = 5;
+				Score = 0;
+			}
+			if (Score > 30  && lives == 0) {
+				g.drawString("Rank: SS", 300, 650);
+				hScore = 1 ;
+				g.setFont(new Font("", Font.BOLD, 60));
+				level = 5;
+				Score = 0;
+			}
+		
+
+				
+			repaint(); // leave this alone, it MUST be the last thing in this method
+		}
+
+	}
+
+	// do not modify this
+	public void paintComponent(Graphics g) {
+		g.drawImage(image, 0, 0, getWidth(), getHeight(), null);
+	}
+
+	// main method with standard graphics code
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Animation Shell");
+		frame.setSize(WIDTH, HEIGHT);
+		frame.setLocation(0, 0);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setContentPane(new Pong()); // TODO: Change this to the name of your class!
+		frame.setVisible(true);
+	}
+
+}
